@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+.leaflet-container { height: 500px; width: 100%; }
+
+/* Mobile tweaks: keep desktop unchanged, make maps and sections fit better on small screens */
+@media (max-width: 640px) {
+	.leaflet-container { height: 320px; }
+	/* reduce large paddings on main pages for mobile */
+	.max-w-7xl, .max-w-6xl { padding-left: 1rem; padding-right: 1rem; }
+	main.p-4 { padding: 0.75rem; }
+}
