@@ -1,13 +1,19 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   GoogleMap,
   Marker,
   InfoWindow,
   Autocomplete,
   MarkerClusterer,
-  useLoadScript
+  useLoadScript,
 } from "@react-google-maps/api";
 import { Menu, Loader2 } from "lucide-react";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { disasterMock } from "../utils/mockData.js";
 
 // Map container style
 const mapContainerStyle = { width: "100%", height: "100vh" };
@@ -20,38 +26,13 @@ const fallbackDisasters = [
   { id: 3, type: "Wildfire", lat: 22.5726, lng: 88.3639, severity: "Low", description: "Kolkata nearby forest fire" },
 ];
 
-import "leaflet/dist/leaflet.css";
-import { Menu } from "lucide-react";
-import L from "leaflet";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { disasterMock } from "../utils/mockData.js";
-
-
-// Fix marker issue
+// Fix marker issue for Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
 });
-
-// Component to handle map interactions and location changes
-function MapController({ mapCenter, mapZoom }) {
-  const map = useMap();
-  
-  useEffect(() => {
-    if (mapCenter && mapZoom) {
-      map.flyTo(mapCenter, mapZoom, {
-        animate: true,
-        duration: 1.5
-      });
-    }
-  }, [mapCenter, mapZoom, map]);
-  
-  return null;
-}
 
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,6 +44,14 @@ export default function Dashboard() {
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState("all");
+
+  const [filtered, setFiltered] = useState(disasterMock);
+  const [baseLayer, setBaseLayer] = useState("map");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mapZoom, setMapZoom] = useState(5);
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchTimeoutRef = useRef(null);
 
   // Load Google Maps
   const { isLoaded, loadError } = useLoadScript({
@@ -128,23 +117,6 @@ export default function Dashboard() {
     return `http://maps.google.com/mapfiles/ms/icons/${colors[type] || "gray"}-dot.png`;
   };
 
-  if (loadError) return <div>Error loading maps</div>;
-  if (!isLoaded || loading)
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <Loader2 className="animate-spin h-8 w-8" />
-        <span className="ml-2">Loading map...</span>
-      </div>
-    );
-  const [filtered, setFiltered] = useState(disasterMock);
-  const [baseLayer, setBaseLayer] = useState("map");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]);
-  const [mapZoom, setMapZoom] = useState(5);
-  const [searchSuggestions, setSearchSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchTimeoutRef = useRef(null);
-
   // Geocoding function to search for locations
   const searchLocation = async (query) => {
     if (!query || query.length < 3) {
@@ -158,14 +130,14 @@ export default function Dashboard() {
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=IN&addressdetails=1`
       );
       const data = await response.json();
-      
+
       if (data && data.length > 0) {
-        const suggestions = data.map(item => ({
+        const suggestions = data.map((item) => ({
           display_name: item.display_name,
           lat: parseFloat(item.lat),
           lon: parseFloat(item.lon),
           type: item.type,
-          importance: item.importance
+          importance: item.importance,
         }));
         setSearchSuggestions(suggestions);
         setShowSuggestions(true);
@@ -174,7 +146,7 @@ export default function Dashboard() {
         setShowSuggestions(false);
       }
     } catch (error) {
-      console.error('Error searching location:', error);
+      console.error("Error searching location:", error);
       setSearchSuggestions([]);
       setShowSuggestions(false);
     }
@@ -182,20 +154,19 @@ export default function Dashboard() {
 
   // Handle location selection
   const selectLocation = (location) => {
-    setMapCenter([location.lat, location.lon]);
-    
-    // Determine zoom level based on location type
+    setMapCenter({ lat: location.lat, lng: location.lon });
+
     let zoomLevel = 10;
-    if (location.type === 'state' || location.type === 'administrative') {
+    if (location.type === "state" || location.type === "administrative") {
       zoomLevel = 8;
-    } else if (location.type === 'city' || location.type === 'town') {
+    } else if (location.type === "city" || location.type === "town") {
       zoomLevel = 12;
-    } else if (location.type === 'village' || location.type === 'suburb') {
+    } else if (location.type === "village" || location.type === "suburb") {
       zoomLevel = 14;
     }
-    
+
     setMapZoom(zoomLevel);
-    setSearchTerm(location.display_name.split(',')[0]); // Set first part as search term
+    setSearchTerm(location.display_name.split(",")[0]);
     setShowSuggestions(false);
   };
 
@@ -204,30 +175,27 @@ export default function Dashboard() {
     const term = e.target.value;
     setSearchTerm(term);
 
-    // Clear previous timeout
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
 
-    // Set new timeout for debounced search
     searchTimeoutRef.current = setTimeout(() => {
       searchLocation(term);
     }, 500);
 
-    // Also filter disasters as before
     if (term === "") {
       setFiltered(disasterMock);
     } else {
-      const filteredDisasters = disasterMock.filter(disaster => 
-        disaster.type.toLowerCase().includes(term.toLowerCase()) ||
-        disaster.description.toLowerCase().includes(term.toLowerCase()) ||
-        disaster.severity.toLowerCase().includes(term.toLowerCase())
+      const filteredDisasters = disasterMock.filter(
+        (disaster) =>
+          disaster.type.toLowerCase().includes(term.toLowerCase()) ||
+          disaster.description.toLowerCase().includes(term.toLowerCase()) ||
+          disaster.severity.toLowerCase().includes(term.toLowerCase())
       );
       setFiltered(filteredDisasters);
     }
   };
 
-  // Handle search form submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchSuggestions.length > 0) {
@@ -235,31 +203,22 @@ export default function Dashboard() {
     }
   };
 
-  // Reset to default view
   const resetView = () => {
-    setMapCenter([20.5937, 78.9629]);
+    setMapCenter(defaultCenter);
     setMapZoom(5);
     setSearchTerm("");
     setShowSuggestions(false);
     setFiltered(disasterMock);
   };
 
-  // Optional: Create a simple icon function for different disaster types
-  const iconForType = (type) => {
-    const colors = {
-      'Earthquake': 'red',
-      'Flood': 'blue', 
-      'Wildfire': 'orange',
-      'Hurricane': 'purple'
-    };
-    
-    return L.divIcon({
-      className: 'custom-marker',
-      html: `<div style="background-color: ${colors[type] || 'gray'}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>`,
-      iconSize: [16, 16],
-      iconAnchor: [8, 8]
-    });
-  };
+  if (loadError) return <div>Error loading maps</div>;
+  if (!isLoaded || loading)
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Loader2 className="animate-spin h-8 w-8" />
+        <span className="ml-2">Loading map...</span>
+      </div>
+    );
 
   return (
     <div className="relative w-screen h-screen">
@@ -283,7 +242,7 @@ export default function Dashboard() {
       </div>
 
       {/* Google Map */}
-      <GoogleMap mapContainerStyle={mapContainerStyle} center={mapCenter} zoom={5}>
+      <GoogleMap mapContainerStyle={mapContainerStyle} center={mapCenter} zoom={mapZoom}>
         {/* User Location */}
         {userLocation && (
           <Marker
