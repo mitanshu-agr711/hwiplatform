@@ -79,38 +79,39 @@ export default function Home({ setRoute }) {
   }
 
   // Animated Counter Component
-  const AnimatedCounter = ({ target, label, icon, color = 'text-blue-600' }) => {
-    const [count, setCount] = useState(0)
-    
-    useEffect(() => {
-      const increment = target / 100
-      const timer = setInterval(() => {
-        setCount(prev => {
-          if (prev < target) {
-            return Math.min(prev + increment, target)
-          }
-          return target
-        })
-      }, 20)
-      
-      return () => clearInterval(timer)
-    }, [target])
-    
-    return (
-      <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-lg border hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-        <div className="flex items-center justify-between mb-2">
-          <div className={`w-12 h-12 ${darkMode ? 'bg-gray-700' : color === 'text-red-600' ? 'bg-red-100' : color === 'text-green-600' ? 'bg-green-100' : color === 'text-blue-600' ? 'bg-blue-100' : 'bg-orange-100'} rounded-lg flex items-center justify-center`}>
-            {icon}
-          </div>
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+ const AnimatedCounter = ({ target, label, icon, color = 'text-blue-600', darkMode }) => {
+  return (
+    <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl p-6 shadow-lg border hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+      <div className="flex items-center justify-between mb-2">
+        <div
+          className={`w-12 h-12 ${
+            darkMode
+              ? 'bg-gray-700'
+              : color === 'text-red-600'
+              ? 'bg-red-100'
+              : color === 'text-green-600'
+              ? 'bg-green-100'
+              : color === 'text-blue-600'
+              ? 'bg-blue-100'
+              : 'bg-orange-100'
+          } rounded-lg flex items-center justify-center`}
+        >
+          {icon}
         </div>
-        <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-1`}>
-          {Math.floor(count).toLocaleString()}
-        </div>
-        <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{label}</div>
+        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
       </div>
-    )
-  }
+
+      <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-1`}>
+        {target?.toLocaleString()}
+      </div>
+
+      <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        {label}
+      </div>
+    </div>
+  );
+};
+
 
   // Line Chart Component
   const LineChart = () => {
@@ -256,80 +257,142 @@ export default function Home({ setRoute }) {
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-slate-50 to-blue-50'}`}>
       
       {/* Sticky Navbar */}
-      <nav className={`sticky top-0 z-50 ${darkMode ? 'bg-gray-800/95' : 'bg-white/95'} backdrop-blur-md border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>DisasterScope</div>
-                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Emergency Response</div>
-              </div>
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#home" className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-red-600'} transition-colors font-medium`}>Home</a>
-              <button onClick={() => setRoute('dashboard')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-red-600'} transition-colors font-medium`}>Dashboard</button>
-              <button onClick={() => setRoute('social')} className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-red-600'} transition-colors font-medium`}>Social Media</button>
-              <a href="#satellite" className={`${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-red-600'} transition-colors font-medium`}>Satellite Analysis</a>
-              
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 rounded-lg ${darkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-100 text-gray-600'} hover:bg-opacity-80 transition-all`}
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
-              
-              {/* Sign Up Button */}
-              <button
-                onClick={() => setShowSignup(true)}
-                className="px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg hover:from-red-600 hover:to-orange-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                Sign Up
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center space-x-2">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`p-2 rounded-lg ${darkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-100 text-gray-600'}`}
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className={`p-2 rounded-lg ${darkMode ? 'text-white' : 'text-gray-600'}`}
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className={`md:hidden ${darkMode ? 'bg-gray-800' : 'bg-white'} border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'} py-4`}>
-              <div className="flex flex-col space-y-4">
-                <a href="#home" className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} font-medium px-4`}>Home</a>
-                <button onClick={() => setRoute('dashboard')} className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} font-medium px-4 text-left`}>Dashboard</button>
-                <button onClick={() => setRoute('social')} className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} font-medium px-4 text-left`}>Social Media</button>
-                <a href="#satellite" className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} font-medium px-4`}>Satellite Analysis</a>
-                <button
-                  onClick={() => setShowSignup(true)}
-                  className="mx-4 px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg font-semibold"
-                >
-                  Sign Up
-                </button>
-              </div>
-            </div>
-          )}
+     <nav
+  className={`fixed top-0 left-0 w-full z-50 ${
+    darkMode ? "bg-gray-800/95" : "bg-white/95"
+  } backdrop-blur-md border-b ${
+    darkMode ? "border-gray-700" : "border-gray-200"
+  } transition-colors duration-300`}
+>
+  <div className="max-w-7xl mx-auto">
+    <div className="flex items-center justify-between h-16">
+      {/* Logo */}
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
+          <Shield className="w-6 h-6 text-white" />
         </div>
-      </nav>
+        <div>
+          <div
+            className={`font-bold text-lg ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            DisasterScope
+          </div>
+          <div
+            className={`text-xs ${
+              darkMode ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
+            Emergency Response
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Menu */}
+      <div className="hidden md:flex items-center space-x-8">
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className={`p-2 rounded-lg ${
+            darkMode
+              ? "bg-gray-700 text-yellow-400"
+              : "bg-gray-100 text-gray-600"
+          } hover:bg-opacity-80 transition-all`}
+        >
+          {darkMode ? "☀️" : "🌙"}
+        </button>
+
+        {/* Sign Up Button */}
+        <button
+          onClick={() => setShowSignup(true)}
+          className="px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg hover:from-red-600 hover:to-orange-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          Sign Up
+        </button>
+      </div>
+
+      {/* Mobile Menu Button */}
+      <div className="md:hidden flex items-center space-x-2">
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className={`p-2 rounded-lg ${
+            darkMode
+              ? "bg-gray-700 text-yellow-400"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {darkMode ? "☀️" : "🌙"}
+        </button>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className={`p-2 rounded-lg ${
+            darkMode ? "text-white" : "text-gray-600"
+          }`}
+        >
+          {mobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
+        </button>
+      </div>
+    </div>
+
+    {/* Mobile Menu */}
+    {mobileMenuOpen && (
+      <div
+        className={`md:hidden ${
+          darkMode ? "bg-gray-800" : "bg-white"
+        } border-t ${
+          darkMode ? "border-gray-700" : "border-gray-200"
+        } py-4`}
+      >
+        <div className="flex flex-col space-y-4">
+          <a
+            href="#home"
+            className={`${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            } font-medium px-4`}
+          >
+            Home
+          </a>
+          <button
+            onClick={() => setRoute("dashboard")}
+            className={`${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            } font-medium px-4 text-left`}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => setRoute("social")}
+            className={`${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            } font-medium px-4 text-left`}
+          >
+            Social Media
+          </button>
+          <a
+            href="#satellite"
+            className={`${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            } font-medium px-4`}
+          >
+            Satellite Analysis
+          </a>
+          <button
+            onClick={() => setShowSignup(true)}
+            className="mx-4 px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg font-semibold"
+          >
+            Sign Up
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+</nav>
+
 
       <div className="max-w-7xl mx-auto px-4">
         {/* Hero Section */}
@@ -394,47 +457,30 @@ export default function Home({ setRoute }) {
             </div>
 
             {/* Hero Image/Animation */}
-            <div className="relative">
-              <div className="relative bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-3xl p-8 backdrop-blur-sm border border-white/20">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-4 rounded-xl shadow-lg`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <AlertTriangle className="w-6 h-6 text-red-500" />
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                    </div>
-                    <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>89</div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Active Alerts</div>
-                  </div>
-                  
-                  <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-4 rounded-xl shadow-lg`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <Users className="w-6 h-6 text-green-500" />
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    </div>
-                    <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>156</div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Rescue Teams</div>
-                  </div>
-                  
-                  <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} p-4 rounded-xl shadow-lg col-span-2`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <Globe className="w-6 h-6 text-blue-500" />
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    </div>
-                    <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Real-time Global Monitoring</div>
-                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>24/7 AI-Powered Surveillance</div>
-                  </div>
-                </div>
-                
-                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium animate-pulse">
-                  🟢 Live Data
-                </div>
-              </div>
-            </div>
+        <div className="relative">
+  <div className="relative rounded-3xl overflow-hidden shadow-xl border border-white/20">
+    {/* Disaster Image */}
+    <img 
+      src="/images/disaster-banner.jpg" // 👉 replace with your actual image path
+      alt="Disaster Response"
+      className="w-full h-64 lg:h-96 object-cover"
+    />
+
+    {/* Optional overlay for better text contrast */}
+    <div className="absolute inset-0 bg-black/40"></div>
+
+    {/* Optional caption or badge */}
+    <div className="absolute top-4 left-4 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+      🌪️ Live Disaster Monitoring
+    </div>
+  </div>
+</div>
+
           </div>
         </section>
 
         {/* Live Global Impact Section */}
-        <section className="py-16">
+        <section className="py-10">
           <div className="text-center mb-12">
             <h2 className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Live Global Impact</h2>
             <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto text-lg`}>
@@ -478,7 +524,7 @@ export default function Home({ setRoute }) {
         </section>
 
         {/* Features Section */}
-        <section className="py-16">
+        <section className="py-8">
           <div className="text-center mb-12">
             <h2 className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>Advanced Disaster Response Features</h2>
             <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto text-lg`}>
