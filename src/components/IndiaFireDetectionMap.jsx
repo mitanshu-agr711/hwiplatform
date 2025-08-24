@@ -110,6 +110,7 @@ export default function IndiaFireDetectionMap() {
   const [selectedFire, setSelectedFire] = useState(null);
   const [emergencyRoutes, setEmergencyRoutes] = useState([]);
   const [affectedRoutes, setAffectedRoutes] = useState([]);
+  const [mapLayer, setMapLayer] = useState('satellite');
 
   const filteredFires = indiaFireData.fires.filter(fire => {
     if (fire.confidence === 'h' && !filters.showHigh) return false;
@@ -153,6 +154,37 @@ export default function IndiaFireDetectionMap() {
           return [...filtered, newRoute];
         });
       }
+    }
+  };
+
+  // Get map layer configuration
+  const getMapLayer = () => {
+    switch (mapLayer) {
+      case 'satellite':
+        return {
+          url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          attribution: '&copy; Esri'
+        };
+      case 'street':
+        return {
+          url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          attribution: '&copy; OpenStreetMap contributors'
+        };
+      case 'terrain':
+        return {
+          url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+          attribution: '&copy; OpenTopoMap contributors'
+        };
+      case 'dark':
+        return {
+          url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+          attribution: '&copy; CartoDB'
+        };
+      default:
+        return {
+          url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          attribution: '&copy; Esri'
+        };
     }
   };
 
@@ -268,6 +300,53 @@ export default function IndiaFireDetectionMap() {
             </div>
           </div>
 
+          {/* Map Layer Selection */}
+          <div>
+            <h4 className="font-medium mb-3">Map Layer</h4>
+            <div className="space-y-2">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="mapLayer"
+                  checked={mapLayer === 'satellite'}
+                  onChange={() => setMapLayer('satellite')}
+                  className="mr-2"
+                />
+                🛰️ Satellite View
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="mapLayer"
+                  checked={mapLayer === 'street'}
+                  onChange={() => setMapLayer('street')}
+                  className="mr-2"
+                />
+                🗺️ Street Map
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="mapLayer"
+                  checked={mapLayer === 'terrain'}
+                  onChange={() => setMapLayer('terrain')}
+                  className="mr-2"
+                />
+                🏔️ Terrain View
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="mapLayer"
+                  checked={mapLayer === 'dark'}
+                  onChange={() => setMapLayer('dark')}
+                  className="mr-2"
+                />
+                🌙 Dark Mode
+              </label>
+            </div>
+          </div>
+
           {/* Emergency Services */}
           <div>
             <h4 className="font-medium mb-3">Emergency Services</h4>
@@ -327,19 +406,6 @@ export default function IndiaFireDetectionMap() {
                 Show Affected Routes
               </label>
             </div>
-            <button 
-              onClick={() => {
-                console.log('=== Testing Nearest Hospital Calculations ===');
-                filteredFires.slice(0, 5).forEach(fire => {
-                  const hospital = findNearestHospital(fire.latitude, fire.longitude);
-                  console.log(`${fire.district}, ${fire.state} -> ${hospital.name} (${hospital.distance}km)`);
-                });
-                console.log('=== Check browser console for results ===');
-              }}
-              className="mt-3 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-            >
-              Test Hospital Routing (Check Console)
-            </button>
           </div>
         </div>
       </div>
@@ -405,15 +471,18 @@ export default function IndiaFireDetectionMap() {
           zoom={5} 
           style={{ height: '600px', width: '100%' }}
         >
-          {/* Satellite View */}
+          {/* Dynamic Map Layer */}
           <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            attribution='&copy; Esri'
+            url={getMapLayer().url}
+            attribution={getMapLayer().attribution}
           />
-          <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
-            attribution=""
-          />
+          {/* Overlay for satellite view boundaries */}
+          {mapLayer === 'satellite' && (
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+              attribution=""
+            />
+          )}
 
           {/* Fire Markers */}
           {filteredFires.map((fire) => (
@@ -511,14 +580,15 @@ export default function IndiaFireDetectionMap() {
 
       {/* Information Panel */}
       <div className="mt-6 bg-blue-50 rounded-lg p-4">
-        <h3 className="font-medium text-blue-800 mb-2">🛣️ Real Road Navigation Features</h3>
+        <h3 className="font-medium text-blue-800 mb-2">�️ Enhanced Fire Detection Map Features</h3>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• <strong>Satellite View:</strong> High-resolution imagery for precise location identification</li>
+          <li>• <strong>Multiple Map Layers:</strong> Satellite, Street, Terrain, and Dark mode views</li>
           <li>• <strong>Real Road Routes:</strong> Actual driving directions using OpenStreetMap routing</li>
-          <li>• <strong>Emergency Routing:</strong> Toggle to show routes from high-risk fires to nearest hospitals</li>
-          <li>• <strong>Affected Routes:</strong> Evacuation paths from urban fires to safe zones (orange dashed lines)</li>
-          <li>• <strong>Interactive Selection:</strong> Click any fire to see detailed route information</li>
+          <li>• <strong>Emergency Routing:</strong> Routes from high-risk fires to nearest hospitals (red dashed)</li>
+          <li>• <strong>Affected Routes:</strong> Evacuation paths from urban fires to safe zones (orange dashed)</li>
+          <li>• <strong>Interactive Selection:</strong> Click any fire to see detailed route information (blue solid)</li>
           <li>• <strong>Hospital Network:</strong> {indianHospitals.length} emergency hospitals across India</li>
+          <li>• <strong>Fixed Dataset:</strong> Persistent data that doesn't reload on page refresh</li>
         </ul>
       </div>
     </div>
