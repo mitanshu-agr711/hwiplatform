@@ -19,6 +19,40 @@ const fallbackDisasters = [
   { id: 2, type: "Earthquake", lat: 19.076, lng: 72.8777, severity: "Medium", description: "Mumbai tremors" },
   { id: 3, type: "Wildfire", lat: 22.5726, lng: 88.3639, severity: "Low", description: "Kolkata nearby forest fire" },
 ];
+import React, { useState, useRef, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { Menu } from "lucide-react";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { disasterMock } from "../utils/mockData.js";
+
+
+// Fix marker issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
+// Component to handle map interactions and location changes
+function MapController({ mapCenter, mapZoom }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (mapCenter && mapZoom) {
+      map.flyTo(mapCenter, mapZoom, {
+        animate: true,
+        duration: 1.5
+      });
+    }
+  }, [mapCenter, mapZoom, map]);
+  
+  return null;
+}
 
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -103,6 +137,130 @@ export default function Dashboard() {
         <span className="ml-2">Loading map...</span>
       </div>
     );
+  const [filtered, setFiltered] = useState(disasterMock);
+  const [baseLayer, setBaseLayer] = useState("map");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]);
+  const [mapZoom, setMapZoom] = useState(5);
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchTimeoutRef = useRef(null);
+
+  // Geocoding function to search for locations
+  const searchLocation = async (query) => {
+    if (!query || query.length < 3) {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=IN&addressdetails=1`
+      );
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const suggestions = data.map(item => ({
+          display_name: item.display_name,
+          lat: parseFloat(item.lat),
+          lon: parseFloat(item.lon),
+          type: item.type,
+          importance: item.importance
+        }));
+        setSearchSuggestions(suggestions);
+        setShowSuggestions(true);
+      } else {
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+      }
+    } catch (error) {
+      console.error('Error searching location:', error);
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  // Handle location selection
+  const selectLocation = (location) => {
+    setMapCenter([location.lat, location.lon]);
+    
+    // Determine zoom level based on location type
+    let zoomLevel = 10;
+    if (location.type === 'state' || location.type === 'administrative') {
+      zoomLevel = 8;
+    } else if (location.type === 'city' || location.type === 'town') {
+      zoomLevel = 12;
+    } else if (location.type === 'village' || location.type === 'suburb') {
+      zoomLevel = 14;
+    }
+    
+    setMapZoom(zoomLevel);
+    setSearchTerm(location.display_name.split(',')[0]); // Set first part as search term
+    setShowSuggestions(false);
+  };
+
+  // Handle search input change with debouncing
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Set new timeout for debounced search
+    searchTimeoutRef.current = setTimeout(() => {
+      searchLocation(term);
+    }, 500);
+
+    // Also filter disasters as before
+    if (term === "") {
+      setFiltered(disasterMock);
+    } else {
+      const filteredDisasters = disasterMock.filter(disaster => 
+        disaster.type.toLowerCase().includes(term.toLowerCase()) ||
+        disaster.description.toLowerCase().includes(term.toLowerCase()) ||
+        disaster.severity.toLowerCase().includes(term.toLowerCase())
+      );
+      setFiltered(filteredDisasters);
+    }
+  };
+
+  // Handle search form submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchSuggestions.length > 0) {
+      selectLocation(searchSuggestions[0]);
+    }
+  };
+
+  // Reset to default view
+  const resetView = () => {
+    setMapCenter([20.5937, 78.9629]);
+    setMapZoom(5);
+    setSearchTerm("");
+    setShowSuggestions(false);
+    setFiltered(disasterMock);
+  };
+
+  // Optional: Create a simple icon function for different disaster types
+  const iconForType = (type) => {
+    const colors = {
+      'Earthquake': 'red',
+      'Flood': 'blue', 
+      'Wildfire': 'orange',
+      'Hurricane': 'purple'
+    };
+    
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="background-color: ${colors[type] || 'gray'}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>`,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8]
+    });
+  };
 
   return (
     <div className="relative w-screen h-screen">
