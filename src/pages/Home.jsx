@@ -458,10 +458,10 @@ export default function Home({ setRoute }) {
 
             {/* Hero Image/Animation */}
         <div className="relative">
-  <div className="relative rounded-3xl overflow-hidden shadow-xl border border-white/20">
+          <div className="relative rounded-3xl overflow-hidden shadow-xl border border-white/20">
     {/* Disaster Image */}
     <img 
-      src="/images/disaster-banner.jpg" // 👉 replace with your actual image path
+      src="../images/area.jpeg" 
       alt="Disaster Response"
       className="w-full h-64 lg:h-96 object-cover"
     />
@@ -470,11 +470,11 @@ export default function Home({ setRoute }) {
     <div className="absolute inset-0 bg-black/40"></div>
 
     {/* Optional caption or badge */}
-    <div className="absolute top-4 left-4 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+    <div className="absolute top-4 left-4 bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
       🌪️ Live Disaster Monitoring
     </div>
   </div>
-</div>
+        </div>
 
           </div>
         </section>
