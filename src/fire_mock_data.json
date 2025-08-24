@@ -1,0 +1,71 @@
+{
+  "fires": [
+    {
+      "id": 0,
+      "latitude": 21.10012,
+      "longitude": 72.63592,
+      "confidence": "n",
+      "brightness": 338.02,
+      "acquisition_date": "2025-08-22",
+      "acquisition_time": "0837",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "version": "2.0NRT"
+    },
+    {
+      "id": 1,
+      "latitude": 29.65531,
+      "longitude": 73.85056,
+      "confidence": "n",
+      "brightness": 333.44,
+      "acquisition_date": "2025-08-22",
+      "acquisition_time": "0839",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "version": "2.0NRT"
+    },
+    {
+      "id": 2,
+      "latitude": 29.7368,
+      "longitude": 73.34235,
+      "confidence": "n",
+      "brightness": 330.65,
+      "acquisition_date": "2025-08-22",
+      "acquisition_time": "0839",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "version": "2.0NRT"
+    },
+    {
+      "id": 3,
+      "latitude": 29.94937,
+      "longitude": 72.18559,
+      "confidence": "n",
+      "brightness": 351.45,
+      "acquisition_date": "2025-08-22",
+      "acquisition_time": "0839",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "version": "2.0NRT"
+    },
+    {
+      "id": 4,
+      "latitude": 29.9806,
+      "longitude": 72.69601,
+      "confidence": "n",
+      "brightness": 330.21,
+      "acquisition_date": "2025-08-22",
+      "acquisition_time": "0839",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "version": "2.0NRT"
+    }
+  ],
+  "statistics": {
+    "total": 27,
+    "high_confidence": 0,
+    "medium_confidence": 25,
+    "low_confidence": 2,
+    "average_brightness": 321.93629629629623
+  }
+}
