@@ -1,22 +1,48 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   GoogleMap,
+  LoadScript,
   Marker,
   InfoWindow,
-  Autocomplete,
-  MarkerClusterer,
-  useLoadScript,
-  DirectionsService,
-  DirectionsRenderer,
-  TrafficLayer,
-  Polygon,
-  Circle,
+  MarkerClusterer
 } from "@react-google-maps/api";
+import { Menu } from "lucide-react";
+
+// Constants
+const FIRMS_API_URL = import.meta.env.VITE_CHECKPOINT_FIRMS;
 import { Menu, Loader2, MapPin, Navigation, AlertTriangle } from "lucide-react";
 
 const mapContainerStyle = { width: "100%", height: "100vh" };
 const defaultCenter = { lat: 20.5937, lng: 78.9629 }; // India center
-const libraries = ["places", "geometry"];
+
+// Options for marker clusterer
+const clusterOptions = {
+  imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
+  gridSize: 50,
+  minimumClusterSize: 3
+};
+
+// Fire marker styles based on confidence
+const getFireMarkerStyle = (confidence) => {
+  const styles = {
+    'h': {
+      color: '#FF0000',
+      size: 35,
+      animation: window.google?.maps?.Animation?.BOUNCE
+    },
+    'n': {
+      color: '#FFA500',
+      size: 30,
+      animation: window.google?.maps?.Animation?.DROP
+    },
+    'l': {
+      color: '#FFFF00',
+      size: 25,
+      animation: window.google?.maps?.Animation?.DROP
+    }
+  };
+  return styles[confidence] || styles['n'];
+};
 
 // Indian states coordinates for realistic disaster placement
 const indianStatesCoords = [
@@ -136,24 +162,53 @@ export default function Dashboard() {
     }
   }, [loadError]);
 
-  // Real-time disaster data simulation for India
+  // Fetch real-time FIRMS data
   useEffect(() => {
-    const fetchRealTimeData = () => {
+    const fetchFirmsData = async () => {
       setLoading(true);
       try {
-        const indianDisasterData = generateIndianDisasters();
-        setDisasters(indianDisasterData);
-        setFilteredDisasters(indianDisasterData);
-        console.log("Indian disaster data updated:", new Date().toLocaleTimeString());
+        console.log("Fetching data from:", FIRMS_API_URL);
+        const response = await fetch(FIRMS_API_URL);
+        const data = await response.json();
+        console.log("Received data:", data);
+
+        if (data && data.fires && Array.isArray(data.fires)) {
+          // Using the exact data structure from your API
+          setDisasters(data.fires);
+          setFilteredDisasters(data.fires);
+          
+          // Set map center to the first fire location if available
+          if (data.fires.length > 0) {
+            const firstFire = data.fires[0];
+            setMapCenter({ 
+              lat: firstFire.location.lat, 
+              lng: firstFire.location.lon 
+            });
+            setMapZoom(6); // Adjust zoom level to better show the fires
+          }
+
+          console.log("Processed disasters:", firmsDisasters);
+          setDisasters(firmsDisasters);
+          setFilteredDisasters(firmsDisasters);
+          if (firmsDisasters.length > 0) {
+            setMapCenter(firmsDisasters[0].location);
+          }
+        } else {
+          console.error("Invalid data format received:", data);
+          setDisasters([]);
+          setFilteredDisasters([]);
+        }
       } catch (err) {
-        console.error("Error updating disaster data:", err);
+        console.error("Error fetching FIRMS data:", err);
+        setDisasters([]);
+        setFilteredDisasters([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRealTimeData();
-    const interval = setInterval(fetchRealTimeData, 45000); // Every 45 seconds
+    fetchFirmsData();
+    const interval = setInterval(fetchFirmsData, 300000); // Update every 5 minutes
     return () => clearInterval(interval);
   }, []);
 
@@ -261,35 +316,28 @@ export default function Dashboard() {
     }
   };
 
-  // Enhanced marker icons with Indian disaster styling
+  // FIRMS-specific marker icons
   const getMarkerIcon = (type, severity) => {
     const severitySize = {
-      'Critical': 40,
       'High': 35,
       'Medium': 30,
-      'Low': 25,
-      'Category 4': 40,
-      'Category 3': 35,
-      'Extreme': 40,
-      'Severe': 35
+      'Low': 25
     };
 
-    const typeColors = {
-      Earthquake: severity?.includes('Critical') || severity?.includes('High') ? 'red' : 'orange',
-      Flood: severity?.includes('Critical') || severity?.includes('High') ? 'red' : 'blue',
-      Cyclone: severity?.includes('Category 4') || severity?.includes('Category 3') ? 'purple' : 'pink',
-      Drought: severity?.includes('Extreme') || severity?.includes('Severe') ? 'yellow' : 'orange',
-      Landslide: 'brown',
-      Wildfire: 'orange'
+    // Use different colors based on fire confidence
+    const confidenceColors = {
+      'High': 'red',
+      'Medium': 'orange',
+      'Low': 'yellow'
     };
     
     return {
-      url: `http://maps.google.com/mapfiles/ms/icons/${typeColors[type] || 'gray'}-dot.png`,
+      url: `http://maps.google.com/mapfiles/ms/icons/${confidenceColors[severity] || 'red'}-dot.png`,
       scaledSize: new window.google.maps.Size(
-        severitySize[severity] || 30, 
+        severitySize[severity] || 30,
         severitySize[severity] || 30
       ),
-      animation: severity?.includes('Critical') || severity?.includes('Category 4') || severity?.includes('Extreme') ? 
+      animation: severity === 'High' ? 
         window.google.maps.Animation.BOUNCE : window.google.maps.Animation.DROP
     };
   };
@@ -375,7 +423,7 @@ export default function Dashboard() {
 
   return (
     <div className="relative w-screen h-screen">
-      {/* Enhanced Top Bar */}
+      {/* Top Bar */}
       <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between bg-white/95 backdrop-blur-md p-3 shadow-lg border-b border-orange-200">
         <div className="flex items-center space-x-3">
           <button
@@ -385,8 +433,8 @@ export default function Dashboard() {
             <Menu size={24} />
           </button>
           <div className="hidden md:block">
-            <h1 className="font-bold text-orange-800">🇮🇳 India Disaster Monitor</h1>
-            <p className="text-xs text-gray-600">Real-time disaster tracking</p>
+            <h1 className="font-bold text-orange-800">🔥 FIRMS Fire Monitor</h1>
+            <p className="text-xs text-gray-600">Real-time fire detection tracking</p>
           </div>
         </div>
 
@@ -394,10 +442,9 @@ export default function Dashboard() {
           <Autocomplete onLoad={onLoadAutocomplete} onPlaceChanged={onPlaceChanged}>
             <input
               type="text"
-              placeholder="Search Indian cities, states..."
+              placeholder="Search location..."
               className="w-64 md:w-80 px-4 py-2 border-2 border-orange-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
-          </Autocomplete>
 
           <div className="flex items-center space-x-2">
             <span className="text-sm text-green-600 font-medium">
