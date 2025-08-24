@@ -68,31 +68,8 @@ export default function Home({ setRoute }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Header with Login */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">🌍</span>
-            </div>
-            <span className="text-xl font-bold text-gray-800">DisasterScope</span>
-          </div>
-          
-          <nav className="hidden md:flex space-x-8 text-sm font-medium">
-            <a href="#" className="text-gray-600 hover:text-red-600 transition">Features</a>
-            <a href="#" className="text-gray-600 hover:text-red-600 transition">Analytics</a>
-            <a href="#" className="text-gray-600 hover:text-red-600 transition">API</a>
-            <a href="#" className="text-gray-600 hover:text-red-600 transition">Pricing</a>
-          </nav>
-          
-          <button 
-            onClick={() => setShowLogin(true)}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition font-medium"
-          >
-            Sign In
-          </button>
-        </div>
-      </header>
+      
+      
 
       <div className="max-w-6xl mx-auto px-4">
         {/* Hero Section */}
