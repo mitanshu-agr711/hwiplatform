@@ -1,0 +1,298 @@
+// Fixed fire detection data for India with realistic locations
+export const indiaFireData = {
+  "fires": [
+    // High confidence fires (9)
+    { 
+      "id": 1, 
+      "latitude": 30.9010, 
+      "longitude": 75.8573, 
+      "confidence": "h", 
+      "brightness": 342.5, 
+      "type": "Agricultural", 
+      "state": "Punjab", 
+      "district": "Ludhiana",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0630",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 2, 
+      "latitude": 31.3260, 
+      "longitude": 75.5762, 
+      "confidence": "h", 
+      "brightness": 351.2, 
+      "type": "Agricultural", 
+      "state": "Punjab", 
+      "district": "Jalandhar",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0645",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 3, 
+      "latitude": 28.7041, 
+      "longitude": 77.1025, 
+      "confidence": "h", 
+      "brightness": 345.9, 
+      "type": "Urban", 
+      "state": "Delhi", 
+      "district": "New Delhi",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0700",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 4, 
+      "latitude": 26.9124, 
+      "longitude": 75.7873, 
+      "confidence": "h", 
+      "brightness": 348.7, 
+      "type": "Forest", 
+      "state": "Rajasthan", 
+      "district": "Jaipur",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0715",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 5, 
+      "latitude": 19.0760, 
+      "longitude": 72.8777, 
+      "confidence": "h", 
+      "brightness": 352.4, 
+      "type": "Urban", 
+      "state": "Maharashtra", 
+      "district": "Mumbai",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0730",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 6, 
+      "latitude": 23.0225, 
+      "longitude": 72.5714, 
+      "confidence": "h", 
+      "brightness": 349.8, 
+      "type": "Industrial", 
+      "state": "Gujarat", 
+      "district": "Ahmedabad",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0745",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 7, 
+      "latitude": 13.0827, 
+      "longitude": 80.2707, 
+      "confidence": "h", 
+      "brightness": 346.5, 
+      "type": "Urban", 
+      "state": "Tamil Nadu", 
+      "district": "Chennai",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0800",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 8, 
+      "latitude": 22.5726, 
+      "longitude": 88.3639, 
+      "confidence": "h", 
+      "brightness": 344.2, 
+      "type": "Urban", 
+      "state": "West Bengal", 
+      "district": "Kolkata",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0815",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 9, 
+      "latitude": 29.0588, 
+      "longitude": 76.0856, 
+      "confidence": "h", 
+      "brightness": 347.8, 
+      "type": "Agricultural", 
+      "state": "Haryana", 
+      "district": "Hisar",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0830",
+      "satellite": "VIIRS_NOAA20"
+    },
+
+    // Medium confidence fires (8)
+    { 
+      "id": 10, 
+      "latitude": 28.4595, 
+      "longitude": 77.0266, 
+      "confidence": "n", 
+      "brightness": 334.1, 
+      "type": "Urban", 
+      "state": "Haryana", 
+      "district": "Gurgaon",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0900",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 11, 
+      "latitude": 28.5355, 
+      "longitude": 77.3910, 
+      "confidence": "n", 
+      "brightness": 338.6, 
+      "type": "Urban", 
+      "state": "Uttar Pradesh", 
+      "district": "Noida",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0915",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 12, 
+      "latitude": 18.5204, 
+      "longitude": 73.8567, 
+      "confidence": "n", 
+      "brightness": 340.1, 
+      "type": "Urban", 
+      "state": "Maharashtra", 
+      "district": "Pune",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0930",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 13, 
+      "latitude": 21.1702, 
+      "longitude": 72.8311, 
+      "confidence": "n", 
+      "brightness": 337.6, 
+      "type": "Industrial", 
+      "state": "Gujarat", 
+      "district": "Surat",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "0945",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 14, 
+      "latitude": 12.9716, 
+      "longitude": 77.5946, 
+      "confidence": "n", 
+      "brightness": 333.8, 
+      "type": "Urban", 
+      "state": "Karnataka", 
+      "district": "Bangalore",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "1000",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 15, 
+      "latitude": 11.0168, 
+      "longitude": 76.9558, 
+      "confidence": "n", 
+      "brightness": 332.7, 
+      "type": "Agricultural", 
+      "state": "Tamil Nadu", 
+      "district": "Coimbatore",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "1015",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 16, 
+      "latitude": 22.9868, 
+      "longitude": 87.8550, 
+      "confidence": "n", 
+      "brightness": 336.4, 
+      "type": "Agricultural", 
+      "state": "West Bengal", 
+      "district": "Howrah",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "1030",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 17, 
+      "latitude": 26.8467, 
+      "longitude": 80.9462, 
+      "confidence": "n", 
+      "brightness": 331.9, 
+      "type": "Agricultural", 
+      "state": "Uttar Pradesh", 
+      "district": "Lucknow",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "1045",
+      "satellite": "VIIRS_NOAA20"
+    },
+
+    // Low confidence fires (3)
+    { 
+      "id": 18, 
+      "latitude": 25.4358, 
+      "longitude": 81.8463, 
+      "confidence": "l", 
+      "brightness": 329.4, 
+      "type": "Agricultural", 
+      "state": "Uttar Pradesh", 
+      "district": "Allahabad",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "1100",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 19, 
+      "latitude": 24.5854, 
+      "longitude": 73.7125, 
+      "confidence": "l", 
+      "brightness": 335.2, 
+      "type": "Forest", 
+      "state": "Rajasthan", 
+      "district": "Udaipur",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "1115",
+      "satellite": "VIIRS_NOAA20"
+    },
+    { 
+      "id": 20, 
+      "latitude": 15.3173, 
+      "longitude": 75.7139, 
+      "confidence": "l", 
+      "brightness": 328.9, 
+      "type": "Forest", 
+      "state": "Karnataka", 
+      "district": "Belgaum",
+      "acquisition_date": "2025-08-25",
+      "acquisition_time": "1130",
+      "satellite": "VIIRS_NOAA20"
+    }
+  ],
+  "statistics": { 
+    "total": 20, 
+    "high_confidence": 9, 
+    "medium_confidence": 8, 
+    "low_confidence": 3,
+    "avg_brightness": 340.2,
+    "updated": "2025-08-25 12:00:00"
+  }
+};
+
+// Hospital data for India with emergency services
+export const indianHospitals = [
+  { "id": "h1", "name": "AIIMS Delhi", "lat": 28.5672, "lng": 77.2100, "type": "Government", "emergency": true, "state": "Delhi" },
+  { "id": "h2", "name": "Fortis Hospital Gurgaon", "lat": 28.4595, "lng": 77.0266, "type": "Private", "emergency": true, "state": "Haryana" },
+  { "id": "h3", "name": "Max Super Speciality Hospital", "lat": 28.5429, "lng": 77.2085, "type": "Private", "emergency": true, "state": "Delhi" },
+  { "id": "h4", "name": "PGI Chandigarh", "lat": 30.7669, "lng": 76.7757, "type": "Government", "emergency": true, "state": "Punjab" },
+  { "id": "h5", "name": "Tata Memorial Hospital", "lat": 19.0176, "lng": 72.8562, "type": "Government", "emergency": true, "state": "Maharashtra" },
+  { "id": "h6", "name": "Kokilaben Hospital", "lat": 19.1136, "lng": 72.8697, "type": "Private", "emergency": true, "state": "Maharashtra" },
+  { "id": "h7", "name": "Lilavati Hospital", "lat": 19.0544, "lng": 72.8301, "type": "Private", "emergency": true, "state": "Maharashtra" },
+  { "id": "h8", "name": "Manipal Hospital", "lat": 12.9279, "lng": 77.6271, "type": "Private", "emergency": true, "state": "Karnataka" },
+  { "id": "h9", "name": "NIMHANS", "lat": 12.9430, "lng": 77.5957, "type": "Government", "emergency": true, "state": "Karnataka" },
+  { "id": "h10", "name": "Apollo Hospital Chennai", "lat": 13.0358, "lng": 80.2297, "type": "Private", "emergency": true, "state": "Tamil Nadu" },
+  { "id": "h11", "name": "Stanley Medical College", "lat": 13.0889, "lng": 80.2808, "type": "Government", "emergency": true, "state": "Tamil Nadu" },
+  { "id": "h12", "name": "SSKM Hospital", "lat": 22.5720, "lng": 88.3645, "type": "Government", "emergency": true, "state": "West Bengal" },
+  { "id": "h13", "name": "Belle Vue Clinic", "lat": 22.5448, "lng": 88.3426, "type": "Private", "emergency": true, "state": "West Bengal" },
+  { "id": "h14", "name": "Ruby Hall Clinic", "lat": 18.5089, "lng": 73.8155, "type": "Private", "emergency": true, "state": "Maharashtra" },
+  { "id": "h15", "name": "Civil Hospital Ahmedabad", "lat": 23.0324, "lng": 72.5818, "type": "Government", "emergency": true, "state": "Gujarat" },
+  { "id": "h16", "name": "SMS Hospital Jaipur", "lat": 26.9157, "lng": 75.8281, "type": "Government", "emergency": true, "state": "Rajasthan" }
+];
