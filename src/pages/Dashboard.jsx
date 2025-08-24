@@ -1,61 +1,108 @@
-import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { Menu } from "lucide-react";
-import L from "leaflet";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { disasterMock } from "../utils/mockData.js";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  GoogleMap,
+  Marker,
+  InfoWindow,
+  Autocomplete,
+  MarkerClusterer,
+  useLoadScript
+} from "@react-google-maps/api";
+import { Menu, Loader2 } from "lucide-react";
 
+// Map container style
+const mapContainerStyle = { width: "100%", height: "100vh" };
+const defaultCenter = { lat: 20.5937, lng: 78.9629 }; // India
 
-// Fix marker issue
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
+// Dummy disaster data for fallback
+const fallbackDisasters = [
+  { id: 1, type: "Flood", lat: 28.7041, lng: 77.1025, severity: "High", description: "Delhi Floods" },
+  { id: 2, type: "Earthquake", lat: 19.076, lng: 72.8777, severity: "Medium", description: "Mumbai tremors" },
+  { id: 3, type: "Wildfire", lat: 22.5726, lng: 88.3639, severity: "Low", description: "Kolkata nearby forest fire" },
+];
 
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
-  const [filtered, setFiltered] = useState(disasterMock);
-  const [baseLayer, setBaseLayer] = useState("map");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [disasters, setDisasters] = useState([]);
+  const [filteredDisasters, setFilteredDisasters] = useState([]);
+  const [selectedDisaster, setSelectedDisaster] = useState(null);
+  const [mapCenter, setMapCenter] = useState(defaultCenter);
+  const [autocomplete, setAutocomplete] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedType, setSelectedType] = useState("all");
 
-  // Filter data based on search term
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    
-    if (term === "") {
-      setFiltered(disasterMock);
-    } else {
-      const filtered = disasterMock.filter(disaster => 
-        disaster.type.toLowerCase().includes(term) ||
-        disaster.description.toLowerCase().includes(term) ||
-        disaster.severity.toLowerCase().includes(term)
+  // Load Google Maps
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
+  });
+
+  // Fetch disaster data
+  useEffect(() => {
+    const fetchDisasters = async () => {
+      setLoading(true);
+      try {
+        // Replace with your API endpoint
+        const res = await fetch("https://api.example.com/disasters");
+        const data = await res.json();
+        setDisasters(data);
+        setFilteredDisasters(data);
+      } catch (err) {
+        console.error("Fetching disasters failed, using fallback data", err);
+        setDisasters(fallbackDisasters);
+        setFilteredDisasters(fallbackDisasters);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDisasters();
+  }, []);
+
+  // Get user location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const loc = { lat: position.coords.latitude, lng: position.coords.longitude };
+          setUserLocation(loc);
+          setMapCenter(loc);
+        },
+        (err) => console.error(err)
       );
-      setFiltered(filtered);
+    }
+  }, []);
+
+  const handleFilterType = (type) => {
+    setSelectedType(type);
+    if (type === "all") setFilteredDisasters(disasters);
+    else setFilteredDisasters(disasters.filter((d) => d.type === type));
+  };
+
+  const onLoadAutocomplete = (autoC) => setAutocomplete(autoC);
+  const onPlaceChanged = () => {
+    if (autocomplete) {
+      const place = autocomplete.getPlace();
+      if (place.geometry) {
+        const loc = place.geometry.location;
+        setMapCenter({ lat: loc.lat(), lng: loc.lng() });
+      }
     }
   };
 
-  // Optional: Create a simple icon function for different disaster types
-  const iconForType = (type) => {
-    const colors = {
-      'Earthquake': 'red',
-      'Flood': 'blue', 
-      'Wildfire': 'orange',
-      'Hurricane': 'purple'
-    };
-    
-    return L.divIcon({
-      className: 'custom-marker',
-      html: `<div style="background-color: ${colors[type] || 'gray'}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>`,
-      iconSize: [16, 16],
-      iconAnchor: [8, 8]
-    });
+  const getMarkerIcon = (type) => {
+    const colors = { Earthquake: "red", Flood: "blue", Wildfire: "orange", Hurricane: "purple" };
+    return `http://maps.google.com/mapfiles/ms/icons/${colors[type] || "gray"}-dot.png`;
   };
+
+  if (loadError) return <div>Error loading maps</div>;
+  if (!isLoaded || loading)
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Loader2 className="animate-spin h-8 w-8" />
+        <span className="ml-2">Loading map...</span>
+      </div>
+    );
 
   return (
     <div className="relative w-screen h-screen">
@@ -68,95 +115,94 @@ export default function Dashboard() {
           <Menu size={24} />
         </button>
 
-        <input
-          type="text"
-          placeholder="Search location..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="w-1/2 md:w-1/3 px-3 py-2 border rounded-lg shadow-sm focus:outline-none"
-        />
+        {/* Google Autocomplete */}
+        <Autocomplete onLoad={onLoadAutocomplete} onPlaceChanged={onPlaceChanged}>
+          <input
+            type="text"
+            placeholder="Search any location..."
+            className="w-1/2 md:w-1/3 px-3 py-2 border rounded-lg shadow-sm focus:outline-none"
+          />
+        </Autocomplete>
       </div>
 
-      {/* Map Fullscreen */}
-      <MapContainer
-        center={[20.5937, 78.9629]} // India
-        zoom={5}
-        className="w-full h-full"
-        style={{ height: "100vh", width: "100%" }} // ✅ ensure height
-      >
-        {baseLayer === "map" ? (
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        ) : (
-          <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+      {/* Google Map */}
+      <GoogleMap mapContainerStyle={mapContainerStyle} center={mapCenter} zoom={5}>
+        {/* User Location */}
+        {userLocation && (
+          <Marker
+            position={userLocation}
+            icon={{
+              url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+              scaledSize: new window.google.maps.Size(40, 40),
+            }}
+          />
         )}
 
-        {filtered && filtered.map((d) => (
-          <Marker
-            key={d.id}
-            position={[d.lat, d.lng]}
-            icon={iconForType ? iconForType(d.type) : undefined}
+        {/* Clustered Disaster Markers */}
+        <MarkerClusterer>
+          {(clusterer) =>
+            filteredDisasters.map((d) => (
+              <Marker
+                key={d.id}
+                position={{ lat: d.lat, lng: d.lng }}
+                clusterer={clusterer}
+                icon={{ url: getMarkerIcon(d.type), scaledSize: new window.google.maps.Size(32, 32) }}
+                onClick={() => setSelectedDisaster(d)}
+                animation={window.google.maps.Animation.DROP}
+              />
+            ))
+          }
+        </MarkerClusterer>
+
+        {selectedDisaster && (
+          <InfoWindow
+            position={{ lat: selectedDisaster.lat, lng: selectedDisaster.lng }}
+            onCloseClick={() => setSelectedDisaster(null)}
           >
-            <Popup>
-              <div className="max-w-sm">
-                <div className="font-semibold">{d.type}</div>
-                <div className="text-sm text-slate-600">{d.description}</div>
-                <div className="text-xs mt-2">
-                  Date: {d.date} | Severity: {d.severity}
-                </div>
+            <div className="p-2">
+              <h4 className="font-bold text-lg">{selectedDisaster.type}</h4>
+              <p className="my-2">{selectedDisaster.description}</p>
+              <p className="text-sm">
+                Severity: <span className="font-medium">{selectedDisaster.severity}</span>
+              </p>
+              <div className="mt-2 text-sm text-blue-600">
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDisaster.lat},${selectedDisaster.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  Get Directions
+                </a>
               </div>
-            </Popup>
-            <Tooltip>
-              {d.type} | {d.severity}
-            </Tooltip>
-          </Marker>
-        ))}
-      </MapContainer>
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
 
+      {/* Sidebar */}
       {isOpen && (
-        <div className="absolute top-0 left-0 w-64 h-full bg-white shadow-lg z-40 p-4">
+        <div className="absolute top-0 left-0 w-64 h-full bg-white shadow-lg z-40 p-4 overflow-y-auto">
           <h2 className="text-lg font-semibold mb-4">Controls</h2>
-          
-          {/* Layer Selector */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Map Layer</label>
-            <select 
-              value={baseLayer} 
-              onChange={(e) => setBaseLayer(e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              <option value="map">Street Map</option>
-              <option value="satellite">Satellite</option>
-            </select>
-          </div>
+          <label className="block text-sm font-medium mb-2">Filter by Type</label>
+          <select
+            value={selectedType}
+            onChange={(e) => handleFilterType(e.target.value)}
+            className="w-full p-2 border rounded mb-4"
+          >
+            <option value="all">All Types</option>
+            <option value="Earthquake">Earthquake</option>
+            <option value="Flood">Flood</option>
+            <option value="Wildfire">Wildfire</option>
+            <option value="Hurricane">Hurricane</option>
+          </select>
 
-          {/* Filter by Disaster Type */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Filter by Type</label>
-            <select 
-              onChange={(e) => {
-                if (e.target.value === "all") {
-                  setFiltered(disasterMock);
-                } else {
-                  setFiltered(disasterMock.filter(d => d.type === e.target.value));
-                }
-              }}
-              className="w-full p-2 border rounded"
-            >
-              <option value="all">All Types</option>
-              <option value="Earthquake">Earthquake</option>
-              <option value="Flood">Flood</option>
-              <option value="Wildfire">Wildfire</option>
-              <option value="Hurricane">Hurricane</option>
-            </select>
-          </div>
-
-          <h3 className="text-md font-medium mb-2">Quick Actions</h3>
-          <ul className="space-y-2">
-            <li className="cursor-pointer hover:underline">Hospitals</li>
-            <li className="cursor-pointer hover:underline">Shelters</li>
-            <li className="cursor-pointer hover:underline">Food</li>
-            <li className="cursor-pointer hover:underline">Routes</li>
-          </ul>
+          <button
+            onClick={() => setMapCenter(userLocation || defaultCenter)}
+            className="w-full p-2 mb-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Center to My Location
+          </button>
         </div>
       )}
     </div>
