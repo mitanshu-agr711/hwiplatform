@@ -19,8 +19,7 @@ const fallbackDisasters = [
   { id: 2, type: "Earthquake", lat: 19.076, lng: 72.8777, severity: "Medium", description: "Mumbai tremors" },
   { id: 3, type: "Wildfire", lat: 22.5726, lng: 88.3639, severity: "Low", description: "Kolkata nearby forest fire" },
 ];
-import React, { useState, useRef, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
+
 import "leaflet/dist/leaflet.css";
 import { Menu } from "lucide-react";
 import L from "leaflet";
