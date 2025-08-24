@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
+import React, { useState, useRef, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Menu } from "lucide-react";
 import L from "leaflet";
@@ -17,11 +17,39 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
+// Component to handle map interactions
+function MapController({ selectedLocation }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (selectedLocation) {
+      const zoom = selectedLocation.zoom || 12;
+      map.flyTo([selectedLocation.lat, selectedLocation.lng], zoom, {
+        animate: true,
+        duration: 1.5
+      });
+    }
+  }, [selectedLocation, map]);
+  
+  return null;
+}
+
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
   const [filtered, setFiltered] = useState(disasterMock);
   const [baseLayer, setBaseLayer] = useState("map");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  // Handle marker click to zoom to location
+  const handleMarkerClick = (disaster) => {
+    setSelectedLocation(disaster);
+  };
+
+  // Reset zoom to show all markers
+  const resetZoom = () => {
+    setSelectedLocation({ lat: 20.5937, lng: 78.9629, zoom: 5 });
+  };
 
   // Filter data based on search term
   const handleSearch = (e) => {
@@ -75,6 +103,13 @@ export default function Dashboard() {
           onChange={handleSearch}
           className="w-1/2 md:w-1/3 px-3 py-2 border rounded-lg shadow-sm focus:outline-none"
         />
+
+        <button
+          onClick={resetZoom}
+          className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+        >
+          Reset View
+        </button>
       </div>
 
       {/* Map Fullscreen */}
@@ -84,6 +119,8 @@ export default function Dashboard() {
         className="w-full h-full"
         style={{ height: "100vh", width: "100%" }} // ✅ ensure height
       >
+        <MapController selectedLocation={selectedLocation} />
+        
         {baseLayer === "map" ? (
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         ) : (
@@ -95,6 +132,9 @@ export default function Dashboard() {
             key={d.id}
             position={[d.lat, d.lng]}
             icon={iconForType ? iconForType(d.type) : undefined}
+            eventHandlers={{
+              click: () => handleMarkerClick(d),
+            }}
           >
             <Popup>
               <div className="max-w-sm">
@@ -103,6 +143,12 @@ export default function Dashboard() {
                 <div className="text-xs mt-2">
                   Date: {d.date} | Severity: {d.severity}
                 </div>
+                <button 
+                  className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                  onClick={() => handleMarkerClick(d)}
+                >
+                  Zoom Here
+                </button>
               </div>
             </Popup>
             <Tooltip>
@@ -157,6 +203,24 @@ export default function Dashboard() {
             <li className="cursor-pointer hover:underline">Food</li>
             <li className="cursor-pointer hover:underline">Routes</li>
           </ul>
+
+          {/* Disaster List for quick zoom */}
+          <div className="mt-6">
+            <h3 className="text-md font-medium mb-2">Active Disasters</h3>
+            <div className="max-h-60 overflow-y-auto">
+              {filtered && filtered.slice(0, 5).map((disaster) => (
+                <div 
+                  key={disaster.id}
+                  className="p-2 mb-2 border rounded cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => handleMarkerClick(disaster)}
+                >
+                  <div className="text-sm font-medium">{disaster.type}</div>
+                  <div className="text-xs text-gray-600">{disaster.severity}</div>
+                  <div className="text-xs text-blue-600">Click to zoom</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
