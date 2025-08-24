@@ -4,6 +4,7 @@ import L from 'leaflet'
 import { geoMock } from '../utils/mockData'
 import TestFireMap from '../components/TestFireMap'
 import IndiaFireDetectionMap from '../components/IndiaFireDetectionMap'
+import Nav from '../components/Navbar'
 
 function colorForSeverity(v) {
   if (v > 0.7) return '#b91c1c'
@@ -20,6 +21,7 @@ export default function Geospatial() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      <Nav />
       <h2 className="text-2xl font-semibold mb-4">Geospatial Analysis</h2>
       
       {/* Tab Navigation */}

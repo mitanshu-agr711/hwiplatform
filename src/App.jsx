@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
+// import Dashboard from "./pages/Dashboard";
 import Social from "./pages/Social";
 import Analysis from "./pages/Analysis";
 import Geospatial from "./pages/Geospatial";
-import Admin from "./pages/admin";
+// import Admin from "./pages/admin";
 
 
 export default function App() {
@@ -19,11 +19,11 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             <Route path="/social" element={<Social />} />
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/geospatial" element={<Geospatial />} />
-            <Route path="/admin" element={<Admin />} />
+            {/* <Route path="/admin" element={<Admin />} /> */}
           </Routes>
         </main>
       </div>

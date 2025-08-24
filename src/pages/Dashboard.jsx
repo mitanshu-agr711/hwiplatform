@@ -12,6 +12,7 @@ import {
   Circle,
 } from "@react-google-maps/api";
 import { Menu, Loader2, MapPin, Navigation, AlertTriangle } from "lucide-react";
+import Nav from "../components/Navbar";
 
 // Constants
 // FIX: Support the proper Vite var and a couple of optional fallbacks if you had old names.
