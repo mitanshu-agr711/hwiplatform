@@ -22,6 +22,8 @@ export default function Navbar() {
     { path: "/social", label: "Social Media" },
     { path: "/analysis", label: "Analysis" },
     { path: "/geospatial", label:  "Dashboard" },
+    { path: "/satellite", label:  "Satellite" },
+
   ];
 
   const handleInputChange = (e) => {
