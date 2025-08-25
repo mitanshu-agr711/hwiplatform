@@ -294,7 +294,7 @@ export default function SatelliteAnalysis() {
                     Drop your satellite data here or click to browse
                   </p>
                   <p className="text-sm text-gray-500 mb-4">
-                    Supports: GeoTIFF, Sentinel, Landsat, JSON, CSV, ZIP (max 50MB)
+                   
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
                     {['GeoTIFF', 'JSON', 'CSV', 'JPG', 'PNG', 'ZIP'].map(format => (

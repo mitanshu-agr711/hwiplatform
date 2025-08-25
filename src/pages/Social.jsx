@@ -4,7 +4,6 @@ import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Legend, Tooltip } from 'chart.js'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Legend, Tooltip)
 import Nav from "../components/Navbar";
-
 export default function Social() {
   const [input, setInput] = useState('#earthquake,#floodrelief')
   const tags = input.split(',').map(s => s.trim()).filter(Boolean)
@@ -20,8 +19,7 @@ export default function Social() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-            <Nav />
-      
+      <Nav/>
       <h2 className="text-2xl font-semibold">Social Media Analysis</h2>
       <p className="text-sm text-slate-600">Sentiment analysis based on mock social posts.</p>
 

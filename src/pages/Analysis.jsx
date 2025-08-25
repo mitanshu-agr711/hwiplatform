@@ -25,7 +25,7 @@ export default function Analysis() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <Nav />
+      <Nav/>
       <h2 className="text-2xl font-semibold">Historical Analysis & Insights</h2>
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-white rounded shadow p-4">
