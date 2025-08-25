@@ -18,10 +18,10 @@ export default function Navbar() {
 
   const links = [
     { path: "/home", label: "Home" },
-    { path: "/dashboard", label: "Dashboard" },
+    // { path: "/dashboard", label: "Dashboard" },
     { path: "/social", label: "Social Media" },
     { path: "/analysis", label: "Analysis" },
-    { path: "/geospatial", label: "Geospatial Photos" },
+    { path: "/geospatial", label:  "Dashboard" },
   ];
 
   const handleInputChange = (e) => {
@@ -120,12 +120,12 @@ export default function Navbar() {
           ))}
           
           {/* Signup Button */}
-          <button
+          {/* <button
             onClick={() => setShowSignup(true)}
             className="ml-4 px-4 py-2 bg-gradient-to-r from-red-500 to-yellow-500 text-white rounded-lg hover:from-red-600 hover:to-yellow-600 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
           >
             Sign Up
-          </button>
+          </button> */}
         </nav>
 
         {/* Mobile dropdown */}
@@ -148,7 +148,7 @@ export default function Navbar() {
               ))}
               
               {/* Mobile Signup Button */}
-              <button
+              {/* <button
                 onClick={() => {
                   setShowSignup(true);
                   setOpen(false);
@@ -156,7 +156,7 @@ export default function Navbar() {
                 className="text-left px-4 py-3 bg-gradient-to-r from-red-500 to-yellow-500 text-white font-semibold hover:from-red-600 hover:to-yellow-600 transition-all duration-200"
               >
                 Sign Up
-              </button>
+              </button> */}
             </div>
           </div>
         )}

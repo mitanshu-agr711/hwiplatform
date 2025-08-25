@@ -3,6 +3,7 @@ import { historicalMock } from '../utils/mockData'
 import { Line, Bar, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend } from 'chart.js'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend)
+import Nav from "../components/Navbar";
 
 export default function Analysis() {
   const [range] = useState('24m')
@@ -24,6 +25,7 @@ export default function Analysis() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
+      <Nav/>
       <h2 className="text-2xl font-semibold">Historical Analysis & Insights</h2>
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-white rounded shadow p-4">

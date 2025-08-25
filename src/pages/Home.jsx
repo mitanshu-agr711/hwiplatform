@@ -359,7 +359,7 @@ export default function Home({ setRoute }) {
         } py-4`}
       >
         <div className="flex flex-col space-y-4">
-          <a
+          {/* <a
             href="#home"
             className={`${
               darkMode ? "text-gray-300" : "text-gray-700"
@@ -374,8 +374,8 @@ export default function Home({ setRoute }) {
             } font-medium px-4 text-left`}
           >
             Dashboard
-          </button>
-          <button
+          </button> */}
+          {/* <button
             onClick={() => navigate('/social')}
             className={`${
               darkMode ? "text-gray-300" : "text-gray-700"
@@ -390,7 +390,7 @@ export default function Home({ setRoute }) {
             } font-medium px-4`}
           >
             Satellite Analysis
-          </a>
+          </a> */}
           <button
             onClick={() => setShowSignup(true)}
             className="mx-4 px-6 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg font-semibold"
