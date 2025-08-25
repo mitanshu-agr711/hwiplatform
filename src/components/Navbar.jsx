@@ -72,7 +72,7 @@ export default function Navbar() {
             DM
           </div>
           <div>
-            <div className="font-semibold">Disaster Monitor</div>
+            <div className="font-semibold">ResQMe</div>
             <div className="text-xs text-slate-500">Insights & Analysis</div>
           </div>
         </div>

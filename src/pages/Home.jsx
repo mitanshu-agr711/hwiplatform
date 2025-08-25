@@ -287,7 +287,7 @@ export default function Home({ setRoute }) {
               darkMode ? "text-white" : "text-gray-900"
             }`}
           >
-            DisasterScope
+            ResQMe
           </div>
           <div
             className={`text-xs ${

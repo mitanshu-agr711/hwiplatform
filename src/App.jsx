@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 // import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -13,22 +14,24 @@ import Satellite from "./pages/satellite";
 
 export default function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50 text-slate-900">
-        {/* <Navbar /> */}
-        <main className="p-4 md:p-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
-            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/social" element={<Social />} />
-            <Route path="/analysis" element={<Analysis />} />
-            <Route path="/geospatial" element={<Geospatial />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/satellite" element={<Satellite />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-slate-900 dark:text-slate-100">
+          {/* <Navbar /> */}
+          <main className="p-4 md:p-8">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
+              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+              <Route path="/social" element={<Social />} />
+              <Route path="/analysis" element={<Analysis />} />
+              <Route path="/geospatial" element={<Geospatial />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/satellite" element={<Satellite />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
