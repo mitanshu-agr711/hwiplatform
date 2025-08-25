@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import Social from "./pages/Social";
 import Analysis from "./pages/Analysis";
 import Geospatial from "./pages/Geospatial";
-import Admin from "./pages/admin";
+// import Admin from "./pages/admin";
 import Satellite from "./pages/satellite";
 
 
@@ -24,7 +24,7 @@ export default function App() {
             <Route path="/social" element={<Social />} />
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/geospatial" element={<Geospatial />} />
-            <Route path="/admin" element={<Admin />} />
+            {/* <Route path="/admin" element={<Admin />} /> */}
             <Route path="/satellite" element={<Satellite />} />
           </Routes>
         </main>

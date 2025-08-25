@@ -4,6 +4,9 @@ import { Link, useLocation } from "react-router-dom";
 export default function Navbar() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  //  const [open, setOpen] = useState(false);
+  const [showSignup, setShowSignup] = useState(false); // <-- must exist
+  const [showPassword, setShowPassword] = useState(false);
 
   const links = [
     { path: "/home", label: "Home" },
