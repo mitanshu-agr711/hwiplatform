@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   AlertTriangle, Shield, Satellite, Users, Phone, MapPin, 
   TrendingUp, Activity, Heart, Globe, Menu, X, Eye, EyeOff,
@@ -6,6 +7,7 @@ import {
 } from 'lucide-react'
 
 export default function Home({ setRoute }) {
+  const navigate = useNavigate()
   const [showSignup, setShowSignup] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -66,7 +68,15 @@ export default function Home({ setRoute }) {
   const handleSignupSubmit = (e) => {
     e.preventDefault()
     console.log('Signup data:', signupForm)
-    alert('Account created successfully!')
+    alert('Account created successfully! Redirecting to your state dashboard...')
+    
+    // Navigate to geospatial page with selected state
+    if (signupForm.state) {
+      navigate(`/geospatial?state=${encodeURIComponent(signupForm.state)}`)
+    } else {
+      navigate('/geospatial')
+    }
+    
     setSignupForm({ name: '', state: '', password: '' })
     setShowSignup(false)
   }
@@ -358,7 +368,7 @@ export default function Home({ setRoute }) {
             Home
           </a>
           <button
-            onClick={() => setRoute("dashboard")}
+            onClick={() => navigate('/dashboard')}
             className={`${
               darkMode ? "text-gray-300" : "text-gray-700"
             } font-medium px-4 text-left`}
@@ -366,7 +376,7 @@ export default function Home({ setRoute }) {
             Dashboard
           </button>
           <button
-            onClick={() => setRoute("social")}
+            onClick={() => navigate('/social')}
             className={`${
               darkMode ? "text-gray-300" : "text-gray-700"
             } font-medium px-4 text-left`}
@@ -428,14 +438,14 @@ export default function Home({ setRoute }) {
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
-                  onClick={() => setRoute('dashboard')} 
+                  onClick={() => navigate('/dashboard')} 
                   className="px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center group"
                 >
                   🚀 Launch Dashboard
                   <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button 
-                  onClick={() => setRoute('analysis')} 
+                  onClick={() => navigate('/analysis')} 
                   className={`px-8 py-4 border-2 ${darkMode ? 'border-gray-600 text-gray-300 hover:border-orange-500 hover:text-orange-400' : 'border-gray-300 text-gray-700 hover:border-orange-600 hover:text-orange-600'} rounded-xl transition-all duration-300 font-semibold text-lg transform hover:-translate-y-1`}
                 >
                   📊 View Analytics
@@ -785,7 +795,7 @@ export default function Home({ setRoute }) {
                   <ul className="space-y-4">
                     <li>
                       <button 
-                        onClick={() => setRoute('dashboard')} 
+                        onClick={() => navigate('/dashboard')} 
                         className={`${darkMode ? 'text-gray-400 hover:text-orange-400' : 'text-gray-600 hover:text-orange-600'} transition-colors font-medium flex items-center group`}
                       >
                         <ChevronRight className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform" />
@@ -794,7 +804,7 @@ export default function Home({ setRoute }) {
                     </li>
                     <li>
                       <button 
-                        onClick={() => setRoute('analysis')} 
+                        onClick={() => navigate('/analysis')} 
                         className={`${darkMode ? 'text-gray-400 hover:text-orange-400' : 'text-gray-600 hover:text-orange-600'} transition-colors font-medium flex items-center group`}
                       >
                         <ChevronRight className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform" />
